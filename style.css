@@ -1,0 +1,118 @@
+/* style.css */
+
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #333;
+    color: #f0f0f0;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* Control Panel */
+#controls, #gameControls {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+#controls label {
+    margin-right: 5px;
+    font-size: 16px;
+}
+
+input[type="number"] {
+    width: 60px;
+    padding: 5px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    background-color: #444;
+    color: #fff;
+    text-align: center;
+}
+
+/* Set Maze Size Button */
+#setSizeBtn {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+#setSizeBtn:hover {
+    background-color: #0056b3;
+}
+
+/* Start and Pause Buttons */
+#startBtn {
+    background-color: #28a745;
+}
+
+#pauseBtn {
+    background-color: #ff5722;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    color: #fff;
+}
+
+button:hover {
+    background-color: #555;
+}
+
+#timer {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Canvas */
+#mazeCanvas {
+    border: 2px solid #f0a500;
+    background-color: #222;
+    margin-top: 20px;
+}
+
+/* Responsiveness */
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+
+    #controls, #gameControls {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    button {
+        width: 100%;
+        text-align: center;
+    }
+
+    #timer {
+        margin-top: 10px;
+        text-align: center;
+    }
+}
