@@ -15,7 +15,17 @@ document.addEventListener('DOMContentLoaded', () => {
     canvas.height = rows * cellSize;
 
     let grid = [];
-    const player = { row: 0, col: 0, size: cellSize / 2, color: '#0095DD', targetRow: 0, targetCol: 0, dx: 0, dy: 0 };
+    const player = {
+        row: 0,
+        col: 0,
+        size: cellSize / 2,
+        color: '#0095DD',
+        targetRow: 0,
+        targetCol: 0,
+        dx: 0,
+        dy: 0,
+        direction: 'up' // Initial direction
+    };
     let goal = { row: 0, col: 0, size: cellSize / 2, color: '#28A745' };
     const path = [];
     let stack = [];
@@ -111,11 +121,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Draw player and goal
     function drawPlayerAndGoal() {
-        ctx.fillStyle = player.color;
-        ctx.fillRect(player.col * cellSize + cellSize / 4, player.row * cellSize + cellSize / 4, player.size, player.size);
-
+        // Draw the goal
         ctx.fillStyle = goal.color;
         ctx.fillRect(goal.col * cellSize + cellSize / 4, goal.row * cellSize + cellSize / 4, goal.size, goal.size);
+    
+        // Draw the player as an arrow based on direction
+        const centerX = player.col * cellSize + cellSize / 2;
+        const centerY = player.row * cellSize + cellSize / 2;
+        const arrowSize = player.size;
+    
+        ctx.fillStyle = player.color;
+        ctx.beginPath();
+    
+        switch (player.direction) {
+            case 'up':
+                ctx.moveTo(centerX, centerY - arrowSize); // Arrow tip
+                ctx.lineTo(centerX - arrowSize / 2, centerY + arrowSize / 2); // Bottom left
+                ctx.lineTo(centerX + arrowSize / 2, centerY + arrowSize / 2); // Bottom right
+                break;
+            case 'right':
+                ctx.moveTo(centerX + arrowSize, centerY); // Arrow tip
+                ctx.lineTo(centerX - arrowSize / 2, centerY - arrowSize / 2); // Top left
+                ctx.lineTo(centerX - arrowSize / 2, centerY + arrowSize / 2); // Bottom left
+                break;
+            case 'down':
+                ctx.moveTo(centerX, centerY + arrowSize); // Arrow tip
+                ctx.lineTo(centerX - arrowSize / 2, centerY - arrowSize / 2); // Top left
+                ctx.lineTo(centerX + arrowSize / 2, centerY - arrowSize / 2); // Top right
+                break;
+            case 'left':
+                ctx.moveTo(centerX - arrowSize, centerY); // Arrow tip
+                ctx.lineTo(centerX + arrowSize / 2, centerY - arrowSize / 2); // Top right
+                ctx.lineTo(centerX + arrowSize / 2, centerY + arrowSize / 2); // Bottom right
+                break;
+        }
+        ctx.closePath();
+        ctx.fill();
     }
 
     // Function to get unvisited neighbors of a given cell
@@ -148,19 +189,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Start the game
-    function startGame() {
-        if (!gameStarted) {
-            gameStarted = true;
-            gamePaused = false;
-            timerDisplay.innerText = `Time Remaining: ${timeRemaining}s`;
-            canvas.style.display = 'block';
-            startBtn.style.display = 'none';
-            pauseBtn.style.display = 'inline';
+    // Start the game
+function startGame() {
+    if (!gameStarted) {
+        gameStarted = true;
+        gamePaused = false;
+        timerDisplay.innerText = `Time Remaining: ${timeRemaining}s`;
+        canvas.style.display = 'block';
+        startBtn.style.display = 'none';
+        pauseBtn.style.display = 'inline';
 
-            timerInterval = setInterval(updateTimer, 1000);
-            generateMaze();
-        }
+        // Start the timer only when the game starts
+        timerInterval = setInterval(updateTimer, 1000);
+        generateMaze(); // Generate the maze when the game starts
     }
+}
+
 
     // Pause the game
     function pauseGame() {
@@ -207,34 +251,38 @@ document.addEventListener('DOMContentLoaded', () => {
     // Function to move the player
     function movePlayer(dx, dy) {
         if (isMoving || gamePaused || !gameStarted) return;
-
+    
         const targetRow = player.row + dy;
         const targetCol = player.col + dx;
-
+    
         if (targetRow >= 0 && targetRow < rows && targetCol >= 0 && targetCol < cols) {
             const currentCell = grid[player.row][player.col];
             const targetCell = grid[targetRow][targetCol];
-
-            // Check for walls
+    
+            // Check for walls and set direction
             if (dx === 0 && dy === -1 && !currentCell.walls[0]) {
                 player.targetRow = targetRow;
                 player.targetCol = targetCol;
+                player.direction = 'up';
             } else if (dx === 1 && dy === 0 && !currentCell.walls[1]) {
                 player.targetRow = targetRow;
                 player.targetCol = targetCol;
+                player.direction = 'right';
             } else if (dx === 0 && dy === 1 && !currentCell.walls[2]) {
                 player.targetRow = targetRow;
                 player.targetCol = targetCol;
+                player.direction = 'down';
             } else if (dx === -1 && dy === 0 && !currentCell.walls[3]) {
                 player.targetRow = targetRow;
                 player.targetCol = targetCol;
+                player.direction = 'left';
             } else {
                 return; // Blocked by wall
             }
-
+    
             // Add current position to path
             path.push({ row: player.row, col: player.col });
-
+    
             isMoving = true;
             animateMovement();
         }
@@ -275,10 +323,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!gameStarted || gamePaused) return;
 
         switch (event.key) {
-            case 'ArrowUp': movePlayer(0, -1); break;
-            case 'ArrowRight': movePlayer(1, 0); break;
-            case 'ArrowDown': movePlayer(0, 1); break;
-            case 'ArrowLeft': movePlayer(-1, 0); break;
+            case 'W': movePlayer(0, -1); break;
+            case 'w': movePlayer(0, -1); break;
+            case 'D': movePlayer(1, 0); break;
+            case 'd': movePlayer(1, 0); break;
+            case 'S': movePlayer(0, 1); break;
+            case 's': movePlayer(0, 1); break;
+            case 'A': movePlayer(-1, 0); break;
+            case 'a': movePlayer(-1, 0); break;
         }
     });
 
